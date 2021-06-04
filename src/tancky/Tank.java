@@ -5,9 +5,16 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 class Tank {
     int tankX;
@@ -29,6 +36,7 @@ class Tank {
 
     Direction direction;
     Direction barrelDirection = Direction.D;
+    BufferedImage tank_icon = null;
 
     private TankClient tankClient;
 
@@ -62,6 +70,12 @@ class Tank {
         this.direction = direction;
         this.tankClient = tankClient;
         this.brick = brick;
+        try {
+			tank_icon = ImageIO.read(new File("tank_down.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     private boolean checkEdge(int x, int y) {
@@ -174,22 +188,82 @@ class Tank {
 
         if (buttonUP && !buttonDown && !buttonLeft && !buttonRight) {
             direction = Direction.U;
+            try {
+				tank_icon = ImageIO.read(new File("tank_up.png"));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         } else if (buttonUP && !buttonDown && !buttonLeft) {
             direction = Direction.RU;
         } else if (!buttonUP && !buttonDown && !buttonLeft && buttonRight) {
             direction = Direction.R;
+            try {
+				tank_icon = ImageIO.read(new File("tank_right.png"));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         } else if (!buttonUP && buttonDown && !buttonLeft && buttonRight) {
             direction = Direction.RD;
         } else if (!buttonUP && buttonDown && !buttonLeft) {
             direction = Direction.D;
+            try {
+				tank_icon = ImageIO.read(new File("tank_down.png"));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         } else if (!buttonUP && buttonDown && !buttonRight) {
             direction = Direction.LD;
         } else if (!buttonUP && !buttonDown && buttonLeft && !buttonRight) {
             direction = Direction.L;
+            try {
+				tank_icon = ImageIO.read(new File("tank_left.png"));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         } else if (buttonUP && !buttonDown && !buttonRight) {
             direction = Direction.LU;
         } else if (!buttonUP && !buttonDown && !buttonLeft) {
             direction = Direction.STOP;
+            switch(oldDirection) {
+	            case L :
+	            	try {
+						tank_icon = ImageIO.read(new File("tank_left.png"));
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	            	break;
+	            case U :
+	            	try {
+	            		tank_icon = ImageIO.read(new File("tank_up.png"));
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	        		break;
+	            case R :
+	            	try {
+	            		tank_icon = ImageIO.read(new File("tank_right.png"));
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	        		break;
+	            case D :
+	            	try {
+						tank_icon = ImageIO.read(new File("tank_down.png"));
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+		        	break;
+		        default:
+            }
+            
         }
         if (this.direction != oldDirection) {
             TankMoveMsg msg = new TankMoveMsg(id, this.tankX, this.tankY, direction, this.barrelDirection);
@@ -234,7 +308,37 @@ class Tank {
 			break;
 		}
         
-        graphics.fillRect(this.tankX, this.tankY, TANK_WIDTH, TANK_HEIGHT);
+//        graphics.fillRect(this.tankX, this.tankY, TANK_WIDTH, TANK_HEIGHT);
+//        BufferedImage tank_icon = null;
+//		try {
+//			if(direction==Direction.L) {
+//				tank_icon = ImageIO.read(new File("tank_left.png"));
+//			}
+//			if(direction==Direction.U) {
+//				tank_icon = ImageIO.read(new File("tank_up.png"));
+//			}
+//			if(direction==Direction.D) {
+//				tank_icon = ImageIO.read(new File("tank_down.png"));
+//			}
+//			if(direction==Direction.R) {
+//				tank_icon = ImageIO.read(new File("tank_right.png"));
+//			}
+//			if(direction==Direction.STOP) {
+//				tank_icon = ImageIO.read(new File("tank_left.png"));
+//			}
+//			
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//    try {
+//		tank_icon = ImageIO.read(new File("tank_left.png"));
+//	} catch (IOException e) {
+//		// TODO Auto-generated catch block
+//		e.printStackTrace();
+//	}
+	
+        graphics.drawImage(tank_icon, this.tankX, this.tankY,TANK_WIDTH, TANK_HEIGHT,null);
 
         int x1 = this.tankX + TANK_WIDTH / 2;
         int y1 = this.tankY + TANK_HEIGHT / 2;
@@ -242,8 +346,8 @@ class Tank {
         int y2 = countY2();
 
         Graphics2D g = (Graphics2D) graphics;
-        g.setStroke(new BasicStroke(10));
-        g.drawLine(x1, y1, x2, y2);
+//        g.setStroke(new BasicStroke(10));
+//        g.drawLine(x1, y1, x2, y2);
         graphics.setColor(graphics.getColor());
         graphics.setFont (new Font ("Courier New", Font.BOLD, 16));
         graphics.setColor(Color.BLACK);
