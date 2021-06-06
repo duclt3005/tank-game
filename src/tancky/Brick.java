@@ -115,9 +115,9 @@ public class Brick {
 	
 	public Brick()
 	{
-		breakBrickImage=new ImageIcon("break_brick.jpg");
-		solidBrickImage=new ImageIcon("solid_brick.jpg");	
-		greenBrickImage=new ImageIcon("grass.jpg");
+		breakBrickImage=new ImageIcon("images/break_brick.jpg");
+		solidBrickImage=new ImageIcon("images/solid_brick.jpg");	
+		greenBrickImage=new ImageIcon("images/grass.jpg");
 		
 		for(int i=0; i< brickON.length;i++)
 		{

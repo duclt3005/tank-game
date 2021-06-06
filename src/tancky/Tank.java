@@ -74,51 +74,11 @@ class Tank {
 	Tank(int x, int y, Direction direction, TankClient tankClient, Brick brick) {
 		this(x, y);
 		this.direction = direction;
+		this.oldPress = this.direction;
 		this.tankClient = tankClient;
 		this.brick = brick;
 		try {
 			tank_icon = ImageIO.read(new File("images/tank.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	private void initTank() {
-		String color = "";
-		TankColorEnum tankColor = TankColorEnum.values()[id];
-		switch (tankColor) {
-//         case WHITE:
-// 			graphics.setColor(Color.WHITE);
-// 			break;
-		case RED:
-			color = "red";
-			break;
-		case GREEN:
-			color = "green";
-			break;
-		case BLUE:
-			color = "blue";
-			break;
-		case YELLOW:
-			color = "yellow";
-			break;
-		case ORANGE:
-			color = "orange";
-			break;
-		case PURPLE:
-			color = "purple";
-			break;
-		case SKY:
-			color = "sky";
-			break;
-		case GRAY:
-			color = "gray";
-			break;
-		default:
-			break;
-		}
-		try {
-			tank_icon = ImageIO.read(new File("images/tank_" + color + "_left.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -161,16 +121,9 @@ class Tank {
 	public boolean checkEdgeTank(int x, int y) {
 		List<Tank> enermyTanks = tankClient.enemyTanks;
 		
-//		if(enermyTanks.size()==0) {
-//			return true;
-//		}
 		for (Tank tankEnermy : enermyTanks) {
 			if (tankEnermy.isLive() && new Rectangle(x, y, 36, 36)
 					.intersects(new Rectangle(tankEnermy.tankX, tankEnermy.tankY, 36, 36)) && (this.id != tankEnermy.id)) {
-//				System.out.println("===enermy:"+tankEnermy.tankX+"-"+tankEnermy.tankY);
-//				System.out.println("===tank:"+this.tankX+"-"+this.tankY);
-//				System.out.println("===pos:"+x+"-"+y);
-//				System.out.println("====================current= "+this.id+"~~~~~enermy= "+tankEnermy.id);
 				this.checkTankEdge = direction;
 				this.oldPosX= tankX;
 				this.oldPosY = tankY;
@@ -252,116 +205,76 @@ class Tank {
 	private void location() {
 		Direction oldDirection = this.direction;
 		int x=this.tankX,y=this.tankY;
-//		if(this.checkTankEdge!=null) {
-//			switch(this.checkTankEdge) {
-//			case U: 
-//				buttonUP = false;
-//				break;
-//			case D: 
-//				buttonDown = false;
-//				break;
-//			case L: 
-//				buttonLeft = false;
-//				break;
-//			case R: 
-//				buttonRight = false;
-//				break;
-//			default: 
-//				break;
-//			}
-//		}
 		if (buttonUP && !buttonDown && !buttonLeft && !buttonRight) {
 			direction = Direction.U;
-//			x= this.tankX-SPEED;
 			getImage(direction);
 		} else if (buttonUP && !buttonDown && !buttonLeft) {
 			direction = Direction.RU;
-//			x = this.tankX - SPEED;
-//			y = this.tankY + SPEED;
 		} else if (!buttonUP && !buttonDown && !buttonLeft && buttonRight) {
 			direction = Direction.R;
-//			x = this.tankX - SPEED;
 			getImage(direction);
 		} else if (!buttonUP && buttonDown && !buttonLeft && buttonRight) {
 			direction = Direction.RD;
-//			x = this.tankX - SPEED;
-//			y = this.tankY - SPEED;
 		} else if (!buttonUP && buttonDown && !buttonLeft) {
 			direction = Direction.D;
-//			y = this.tankY - SPEED;
 			getImage(direction);
 		} else if (!buttonUP && buttonDown && !buttonRight) {
 			direction = Direction.LD;
-//			x = tankX + SPEED;
-//			y = tankY - SPEED;
 		} else if (!buttonUP && !buttonDown && buttonLeft && !buttonRight) {
 			direction = Direction.L;
-//			x = tankX + SPEED;
 			getImage(direction);
 		} else if (buttonUP && !buttonDown && !buttonRight) {
 			direction = Direction.LU;
-//			x = tankX + SPEED;
-//			y = tankY + SPEED;
 		} else if (!buttonUP && !buttonDown && !buttonLeft) {
 			direction = Direction.STOP;
-//			this.checkTankEdge= null;
 			getImage(oldDirection);
 		}
 		if (this.direction != oldDirection) {
 			if(this.checkTankEdge!=null && this.oldPress!=null && this.checkTankEdge == this.oldPress && this.oldPress == this.direction) {
-//				this.checkTankEdge=null;
 				return;
 			}
-//			if( this.oldPress != this.direction ) {
-//				this.checkTankEdge=null;
-//			}
-				getImage(oldDirection);
-				TankMoveMsg msg = new TankMoveMsg(id, this.tankX, this.tankY, direction, this.barrelDirection);
-				tankClient.netClient.send(msg);
-//			}
+			getImage(oldDirection);
+			TankMoveMsg msg = new TankMoveMsg(id, this.tankX, this.tankY, direction, this.barrelDirection, this.oldPress);
+			tankClient.netClient.send(msg);
 		}
-//		else {
-//			this.checkTankEdge=null;
-//		}
 	}
 
 	void draw(Graphics graphics) {
-//		this.checkTankEdge=null;
 		if (!this.isLive) {
 			return;
 		}
-		TankColorEnum tankColor = TankColorEnum.values()[id];
-		switch (tankColor) {
-		case WHITE:
-			graphics.setColor(Color.WHITE);
-			break;
-		case RED:
-			graphics.setColor(new Color(255, 105, 105));
-			break;
-		case GREEN:
-			graphics.setColor(new Color(76, 209, 55));
-			break;
-		case BLUE:
-			graphics.setColor(new Color(0, 168, 255));
-			break;
-		case YELLOW:
-			graphics.setColor(new Color(255, 242, 0));
-			break;
-		case ORANGE:
-			graphics.setColor(new Color(255, 159, 26));
-			break;
-		case PURPLE:
-			graphics.setColor(new Color(156, 136, 255));
-			break;
-		case SKY:
-			graphics.setColor(new Color(103, 230, 220));
-			break;
-		case GRAY:
-			graphics.setColor(new Color(127, 140, 141));
-			break;
-		default:
-			break;
-		}
+//		TankColorEnum tankColor = TankColorEnum.values()[id];
+//		switch (tankColor) {
+//		case WHITE:
+//			graphics.setColor(Color.WHITE);
+//			break;
+//		case RED:
+//			graphics.setColor(new Color(255, 105, 105));
+//			break;
+//		case GREEN:
+//			graphics.setColor(new Color(76, 209, 55));
+//			break;
+//		case BLUE:
+//			graphics.setColor(new Color(0, 168, 255));
+//			break;
+//		case YELLOW:
+//			graphics.setColor(new Color(255, 242, 0));
+//			break;
+//		case ORANGE:
+//			graphics.setColor(new Color(255, 159, 26));
+//			break;
+//		case PURPLE:
+//			graphics.setColor(new Color(156, 136, 255));
+//			break;
+//		case SKY:
+//			graphics.setColor(new Color(103, 230, 220));
+//			break;
+//		case GRAY:
+//			graphics.setColor(new Color(127, 140, 141));
+//			break;
+//		default:
+//			break;
+//		}
 
 //        graphics.fillRect(this.tankX, this.tankY, TANK_WIDTH, TANK_HEIGHT);
 		getImage(direction);
@@ -383,8 +296,9 @@ class Tank {
 		move();
 	}
 
-	private void getImage(Direction oldDirection) {
+	public void getImage(Direction oldDirection) {
 		String color = "";
+		String direct = "";
 		TankColorEnum tankColor = TankColorEnum.values()[id];
 		switch (tankColor) {
 //        case WHITE:
@@ -451,13 +365,51 @@ class Tank {
 			}
 			break;
 		default:
-//			try {
-//				tank_icon = ImageIO.read(new File("images/tank_" + color + "_down.png"));
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
+			if(oldPress !=null) {
+				switch(oldPress) {
+				case U: 
+					direct = "up";
+					break;
+				case L: 
+					direct = "left";
+					break;
+				case D: 
+					direct = "down";
+					break;
+				case R: 
+					direct = "right";
+					break;
+				default:
+					break;
+				}
+			}
+			if(color=="" && direct=="") {
+				try {
+					tank_icon = ImageIO.read(new File("images/tank.png"));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			else if(color!="" && direct=="") {
+				try {
+					tank_icon = ImageIO.read(new File("images/tank_" + color + "_down.png"));
+//					tank_icon = ImageIO.read(new File("images/tank_" + color + "_"+direct+".png"));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			else {
+				try {
+//					tank_icon = ImageIO.read(new File("images/tank_" + color + "_down.png"));
+					tank_icon = ImageIO.read(new File("images/tank_" + color + "_"+direct+".png"));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			break;
 		}
 	}
 
@@ -556,7 +508,6 @@ class Tank {
 						break;
 			}
 		}
-		System.out.println(tankX+"++++"+tankY+"==="+oldPosX+"++++"+oldPosY);
 		switch (key) {
 		case KeyEvent.VK_W:
 			if(this.checkTankEdge!=Direction.U) {
@@ -653,11 +604,11 @@ class Tank {
 			buttonDown = false;
 			break;
 		case KeyEvent.VK_A:
-			oldPress = Direction.R;
+			oldPress = Direction.L;
 			buttonLeft = false;
 			break;
 		case KeyEvent.VK_D:
-			oldPress = Direction.L;
+			oldPress = Direction.R;
 			buttonRight = false;
 			break;
 		}

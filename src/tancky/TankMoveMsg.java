@@ -14,14 +14,16 @@ public class TankMoveMsg implements Msg {
     private int y;
     private Direction direction;
     private Direction ptDirection;
+    private Direction oldDirection;
     private TankClient tankClient;
 
-    TankMoveMsg(int id, int x, int y, Direction direction, Direction ptDirection) {
+    TankMoveMsg(int id, int x, int y, Direction direction, Direction ptDirection, Direction oldDirection) {
         this.id = id;
         this.x = x;
         this.y = y;
         this.direction = direction;
         this.ptDirection = ptDirection;
+        this.oldDirection = oldDirection;
     }
 
     TankMoveMsg(TankClient tankClient) {
@@ -38,6 +40,7 @@ public class TankMoveMsg implements Msg {
             dataOutputStream.writeInt(y);
             dataOutputStream.writeInt(this.direction.ordinal());
             dataOutputStream.writeInt(this.ptDirection.ordinal());
+            dataOutputStream.writeInt(this.oldDirection.ordinal());
             dataOutputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
@@ -64,7 +67,7 @@ public class TankMoveMsg implements Msg {
             int y = dataInputStream.readInt();
             Direction direction = Direction.values()[dataInputStream.readInt()];
             Direction barrelDirection = Direction.values()[dataInputStream.readInt()];
-
+            Direction oldDirect= Direction.values()[dataInputStream.readInt()];
             for (int i = 0; i < tankClient.enemyTanks.size(); i++) {
                 Tank tank = tankClient.enemyTanks.get(i);
                 if (tank.id == id) {
@@ -72,6 +75,7 @@ public class TankMoveMsg implements Msg {
                     tank.tankY = y;
                     tank.direction = direction;
                     tank.barrelDirection = barrelDirection;
+                    tank.oldPress = oldDirect;
                     break;
                 }
             }
