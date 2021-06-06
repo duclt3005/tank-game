@@ -63,7 +63,7 @@ class Missile {
 		case ORANGE:
 			g.setColor(new Color(255, 153, 51));
 			break;
-		case PINK:
+		case PURPLE:
 			g.setColor(Color.PINK);
 			break;
 		case SKY:

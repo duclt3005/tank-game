@@ -1,5 +1,9 @@
 package tancky;
 
+import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -7,6 +11,8 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
+
+import javax.imageio.ImageIO;
 
 public class TankNewMsg implements Msg {
     private Tank tank;
@@ -24,6 +30,7 @@ public class TankNewMsg implements Msg {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
         try {
+        	
             dataOutputStream.writeInt(TANK_NEW_MSG);
             dataOutputStream.writeInt(tank.id);
             dataOutputStream.writeInt(tank.tankX);
@@ -33,7 +40,6 @@ public class TankNewMsg implements Msg {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         byte[] bytes = byteArrayOutputStream.toByteArray();
         try {
             datagramSocket.send(new DatagramPacket(bytes, bytes.length, new InetSocketAddress(IP, udpPort)));
@@ -44,6 +50,7 @@ public class TankNewMsg implements Msg {
 
     public void parse(DataInputStream dataInputStream) {
         try {
+        	
             int id = dataInputStream.readInt();
             if (tankClient.tank.id == id) {
                 return;
@@ -53,7 +60,6 @@ public class TankNewMsg implements Msg {
             int y = dataInputStream.readInt();
             Direction direction = Direction.values()[dataInputStream.readInt()];
             boolean isExisted = false;
-
             for (int i = 0; i < tankClient.enemyTanks.size(); i++) {
                 if (tankClient.enemyTanks.get(i).id == id) {
                     isExisted = true;
@@ -63,8 +69,8 @@ public class TankNewMsg implements Msg {
 
             if (!isExisted) {
                 tankClient.netClient.send(new TankNewMsg(tankClient.tank));
-
                 Tank tank = new Tank(x, y, direction, tankClient, tankClient.bricks);
+                
                 tank.id = id;
                 tankClient.enemyTanks.add(tank);
             }
