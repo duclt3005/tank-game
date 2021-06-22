@@ -57,10 +57,10 @@ public class MissileDeadMsg implements Msg {
                 if (missile.tankID == tankId && missile.id == ID) {
                     missile.live = false;
                     if(checkObject == -1) {
-                    	tankClient.explodes.add(new Explode(missile.x, missile.y, 0,tankId,tankClient));
+                    	tankClient.explodes.add(new Explode(missile.x, missile.y, 0,tankId));
                     }
                     if(checkObject != -1 && checkObject != -2) {
-                    	tankClient.explodes.add(new Explode(tankClient.bricks.bricksXPos[checkObject], tankClient.bricks.bricksYPos[checkObject], 1, tankId,tankClient));
+                    	tankClient.explodes.add(new Explode(tankClient.bricks.bricksXPos[checkObject], tankClient.bricks.bricksYPos[checkObject], 1, tankId));
                     }
                     break;
                 }

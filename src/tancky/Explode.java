@@ -11,12 +11,9 @@ class Explode {
 
     private boolean live = true;
 
-    private TankClient tankClient;
-
-    Explode(int x, int y, int type,int tankID, TankClient tc) {
+    Explode(int x, int y, int type,int tankID) {
         this.x = x;
         this.y = y;
-        this.tankClient = tc;
         this.tankID = tankID;
         this.type = type;
     }

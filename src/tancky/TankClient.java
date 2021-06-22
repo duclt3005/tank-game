@@ -73,9 +73,7 @@ public class TankClient extends JFrame {
 		bricks.draw(this, gOffScreen);
 
 		for (int i = 0; i < enemyTanks.size(); i++) {
-//			if(enemyTanks.get(i).checkEdgeTank(enemyTanks.get(i).tankX, enemyTanks.get(i).tankY)) {
 				enemyTanks.get(i).draw(gOffScreen);
-//			}
 		}
 		for (int i = 0; i < missiles.size(); i++) {
 			if (missiles.get(i).hitTank(tank)) {
@@ -226,7 +224,7 @@ public class TankClient extends JFrame {
 		public void keyReleased(KeyEvent keyEvent) {
 			tank.keyReleased(keyEvent);
 		}
-
+		
 		public void keyPressed(KeyEvent keyEvent) {
 			switch (keyEvent.getKeyCode()) {
 			case KeyEvent.VK_C:
@@ -256,7 +254,7 @@ public class TankClient extends JFrame {
 			super(TankClient.this, true);
 			textFieldIP.addKeyListener(new KeyMonitor());
 			this.setLayout(new FlowLayout());
-			this.add(new Label("Host IP :"));
+			this.add(new Label("Enter IP :"));
 			this.add(textFieldIP);
 			this.add(button);
 			button.addActionListener(e -> enterIP(textFieldIP.getText().trim()));

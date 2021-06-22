@@ -6,6 +6,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.regex.Matcher;
@@ -38,7 +39,7 @@ public class NetClient {
     boolean connect(String IP, int port) {
         this.IP = IP;
         Matcher matcher = IPv4_PATTERN.matcher(IP);
-        
+        System.out.println(this.IP+"___"+port);
         if(!matcher.matches()) {
         	JOptionPane.showMessageDialog(null, "Invalid IP", "ERROR",JOptionPane.ERROR_MESSAGE);
         	return false;
@@ -47,10 +48,15 @@ public class NetClient {
             datagramSocket = new DatagramSocket(udpPort);
         } catch (SocketException e) {
             e.printStackTrace();
+            return false;
         }
 
         Socket socket = null;
         try {
+        	if(!InetAddress.getByName(this.IP).isReachable(2000)) {
+        		JOptionPane.showMessageDialog(null, "Cannot connect to IP", "ERROR",JOptionPane.ERROR_MESSAGE);
+        		return false;
+        	}
             socket = new Socket(IP, port);
             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
             DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
@@ -63,7 +69,7 @@ public class NetClient {
             dataOutputStream.close();
             dataInputStream.close();
         } catch (IOException e) {
-        	JOptionPane.showMessageDialog(null, "No more player", "Error",JOptionPane.ERROR_MESSAGE);
+        	JOptionPane.showMessageDialog(null, "Cannot to connect", "Error",JOptionPane.ERROR_MESSAGE);
             return false;
         } finally {
             if (socket != null) {
@@ -74,7 +80,7 @@ public class NetClient {
                 }
             }
             else {
-            	JOptionPane.showMessageDialog(null, "Invalid IP", "Error",JOptionPane.ERROR_MESSAGE);
+//            	JOptionPane.showMessageDialog(null, "Invalid IP", "Error",JOptionPane.ERROR_MESSAGE);
                 return false;
             }
         }

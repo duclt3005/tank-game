@@ -28,7 +28,7 @@ class Tank {
 	int id;
 	int numKill = 0;
 	Direction checkTankEdge=null;
-	
+	Direction checkTankEdgeOld = null;
 	Direction oldPress = null ;
 
 	private boolean buttonUP = false;
@@ -37,7 +37,6 @@ class Tank {
 	private boolean buttonRight = false;
 	private boolean isLive = true;
 	private Brick brick;
-	private int oldPosX=0, oldPosY=0;
 
 
 	Direction direction;
@@ -125,8 +124,6 @@ class Tank {
 			if (tankEnermy.isLive() && new Rectangle(x, y, 36, 36)
 					.intersects(new Rectangle(tankEnermy.tankX, tankEnermy.tankY, 36, 36)) && (this.id != tankEnermy.id)) {
 				this.checkTankEdge = direction;
-				this.oldPosX= tankX;
-				this.oldPosY = tankY;
 				return false;
 			}
 		}
@@ -230,9 +227,6 @@ class Tank {
 			getImage(oldDirection);
 		}
 		if (this.direction != oldDirection) {
-			if(this.checkTankEdge!=null && this.oldPress!=null && this.checkTankEdge == this.oldPress && this.oldPress == this.direction) {
-				return;
-			}
 			getImage(oldDirection);
 			TankMoveMsg msg = new TankMoveMsg(id, this.tankX, this.tankY, direction, this.barrelDirection, this.oldPress);
 			tankClient.netClient.send(msg);
@@ -243,56 +237,9 @@ class Tank {
 		if (!this.isLive) {
 			return;
 		}
-//		TankColorEnum tankColor = TankColorEnum.values()[id];
-//		switch (tankColor) {
-//		case WHITE:
-//			graphics.setColor(Color.WHITE);
-//			break;
-//		case RED:
-//			graphics.setColor(new Color(255, 105, 105));
-//			break;
-//		case GREEN:
-//			graphics.setColor(new Color(76, 209, 55));
-//			break;
-//		case BLUE:
-//			graphics.setColor(new Color(0, 168, 255));
-//			break;
-//		case YELLOW:
-//			graphics.setColor(new Color(255, 242, 0));
-//			break;
-//		case ORANGE:
-//			graphics.setColor(new Color(255, 159, 26));
-//			break;
-//		case PURPLE:
-//			graphics.setColor(new Color(156, 136, 255));
-//			break;
-//		case SKY:
-//			graphics.setColor(new Color(103, 230, 220));
-//			break;
-//		case GRAY:
-//			graphics.setColor(new Color(127, 140, 141));
-//			break;
-//		default:
-//			break;
-//		}
-
-//        graphics.fillRect(this.tankX, this.tankY, TANK_WIDTH, TANK_HEIGHT);
 		getImage(direction);
 		graphics.drawImage(tank_icon, this.tankX, this.tankY, TANK_WIDTH, TANK_HEIGHT, null);
 
-//		int x1 = this.tankX + TANK_WIDTH / 2;
-//		int y1 = this.tankY + TANK_HEIGHT / 2;
-//		int x2 = countX2();
-//		int y2 = countY2();
-
-//		Graphics2D g = (Graphics2D) graphics;
-//        g.setStroke(new BasicStroke(10));
-//        g.drawLine(x1, y1, x2, y2);
-//        graphics.setColor(graphics.getColor());
-//        graphics.setFont (new Font ("Courier New", Font.BOLD, 16));
-//        graphics.setColor(Color.BLACK);
-//        graphics.drawString(""+this.id, this.tankX+12, this.tankY + 24);
-		
 		move();
 	}
 
@@ -301,9 +248,6 @@ class Tank {
 		String direct = "";
 		TankColorEnum tankColor = TankColorEnum.values()[id];
 		switch (tankColor) {
-//        case WHITE:
-// 			graphics.setColor(Color.WHITE);
-// 			break;
 		case RED:
 			color = "red";
 			break;
@@ -336,7 +280,6 @@ class Tank {
 			try {
 				tank_icon = ImageIO.read(new File("images/tank_" + color + "_left.png"));
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			break;
@@ -344,7 +287,6 @@ class Tank {
 			try {
 				tank_icon = ImageIO.read(new File("images/tank_" + color + "_up.png"));
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			break;
@@ -352,7 +294,6 @@ class Tank {
 			try {
 				tank_icon = ImageIO.read(new File("images/tank_" + color + "_right.png"));
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			break;
@@ -360,7 +301,6 @@ class Tank {
 			try {
 				tank_icon = ImageIO.read(new File("images/tank_" + color + "_down.png"));
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			break;
@@ -387,25 +327,20 @@ class Tank {
 				try {
 					tank_icon = ImageIO.read(new File("images/tank.png"));
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 			else if(color!="" && direct=="") {
 				try {
 					tank_icon = ImageIO.read(new File("images/tank_" + color + "_down.png"));
-//					tank_icon = ImageIO.read(new File("images/tank_" + color + "_"+direct+".png"));
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 			else {
 				try {
-//					tank_icon = ImageIO.read(new File("images/tank_" + color + "_down.png"));
 					tank_icon = ImageIO.read(new File("images/tank_" + color + "_"+direct+".png"));
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -413,94 +348,31 @@ class Tank {
 		}
 	}
 
-	private int countX2() {
-		double x = 0;
-		switch (barrelDirection) {
-		case U:
-			x = this.tankX + TANK_WIDTH / 2;
-			break;
-		case RU:
-			x = this.tankX + TANK_WIDTH * 1.5 - 16;
-			break;
-		case R:
-			x = this.tankX + TANK_WIDTH * 1.5 - 12;
-			break;
-		case RD:
-			x = this.tankX + TANK_WIDTH * 1.5 - 16;
-			break;
-		case D:
-			x = this.tankX + TANK_WIDTH / 2;
-			break;
-		case LD:
-			x = this.tankX - TANK_WIDTH / 2 + 16;
-			break;
-		case L:
-			x = this.tankX - TANK_WIDTH / 2 + 10;
-			break;
-		case LU:
-			x = this.tankX - TANK_WIDTH / 2 + 16;
-			break;
-		default:
-			break;
-		}
-		return (int) x;
-	}
-
-	private int countY2() {
-		double y = 0;
-		switch (barrelDirection) {
-		case U:
-			y = this.tankY - TANK_HEIGHT / 2 + 12;
-			break;
-		case RU:
-			y = this.tankY - TANK_HEIGHT / 2 + 16;
-			break;
-		case R:
-			y = this.tankY + TANK_HEIGHT / 2;
-			break;
-		case RD:
-			y = this.tankY + TANK_HEIGHT * 1.5 - 16;
-			break;
-		case D:
-			y = this.tankY + TANK_HEIGHT * 1.5 - 12;
-			break;
-		case LD:
-			y = this.tankY + TANK_HEIGHT * 1.5 - 16;
-			break;
-		case L:
-			y = this.tankY + TANK_WIDTH / 2;
-			break;
-		case LU:
-			y = this.tankY - TANK_HEIGHT / 2 + 16;
-			break;
-		default:
-			break;
-		}
-		return (int) y;
-	}
-
 	void keyPressed(KeyEvent keyEvent) {
 		int key = keyEvent.getKeyCode();
-		
 		if(this.checkTankEdge !=null) {
 			switch(this.checkTankEdge) {
 				case U:
 					if(key != KeyEvent.VK_W  ) {
+						this.checkTankEdgeOld= this.checkTankEdge;
 						this.checkTankEdge=null;
 					}
 					break;
 				case L:
 					if(key != KeyEvent.VK_A ) {
+						this.checkTankEdgeOld= this.checkTankEdge;
 						this.checkTankEdge=null;
 					}
 					break;
 				case D:
 					if(key != KeyEvent.VK_S ) {
+						this.checkTankEdgeOld= this.checkTankEdge;
 						this.checkTankEdge=null;
 					}
 					break;
 				case R:
 					if(key != KeyEvent.VK_D ) {
+						this.checkTankEdgeOld= this.checkTankEdge;
 						this.checkTankEdge=null;
 					}
 					break;
@@ -509,70 +381,43 @@ class Tank {
 			}
 		}
 		switch (key) {
-		case KeyEvent.VK_W:
-			if(this.checkTankEdge!=Direction.U) {
-				buttonUP = true;
-//				if(this.oldPosX!=0 && this.oldPosY != 0 && Math.abs(this.oldPosY-this.tankY)>60 ) {
-//					this.checkTankEdge = Direction.U;
-//					buttonUP = false;
-//				}
-			}
-			else {
-				buttonUP = false;
-			}
-			break;
-		case KeyEvent.VK_S:
-			if(this.checkTankEdge!=Direction.D) {
-				buttonDown = true;
-//				if(this.oldPosX!=0 && this.oldPosY != 0 && Math.abs(this.oldPosY-this.tankY)>60) {
-//					this.checkTankEdge = Direction.D;
-//					buttonDown = false;
-//				}
-			}
-			else {
-				buttonDown = false;
-			}
-			break;
-		case KeyEvent.VK_A:
-			if(this.checkTankEdge!=Direction.L) {
-				buttonLeft = true;
-//				if(this.oldPosX!=0 && this.oldPosY != 0 && Math.abs(this.oldPosX-this.tankX)>60) {
-//					this.checkTankEdge = Direction.L;
-//					buttonLeft = false;
-//				}
-			}
-			else {
-				buttonLeft = false;
-			}
-			break;
-		case KeyEvent.VK_D:
-			if(this.checkTankEdge!=Direction.R) {
-				buttonRight = true;
-//				if(this.oldPosX!=0 && this.oldPosY != 0 &&Math.abs(this.oldPosX-this.tankX)>60) {
-//					this.checkTankEdge = Direction.R;
-//					buttonRight = false;
-//				}
-			}
-			else {
-				buttonRight = false;
-			}
-			break;
+			case KeyEvent.VK_W:
+				if(this.checkTankEdge!=Direction.U) {
+					buttonUP = true;
+					oldPress = Direction.U;
+				}
+				else {
+					buttonUP = false;
+				}
+				break;
+			case KeyEvent.VK_S:
+				if(this.checkTankEdge!=Direction.D) {
+					buttonDown = true;
+					oldPress = Direction.D;
+				}
+				else {
+					buttonDown = false;
+				}
+				break;
+			case KeyEvent.VK_A:
+				if(this.checkTankEdge!=Direction.L) {
+					buttonLeft = true;
+					oldPress = Direction.L;
+				}
+				else {
+					buttonLeft = false;
+				}
+				break;
+			case KeyEvent.VK_D:
+				if(this.checkTankEdge!=Direction.R) {
+					buttonRight = true;
+					oldPress = Direction.R;
+				}
+				else {
+					buttonRight = false;
+				}
+				break;
 		}
-		
-//		switch (key) {
-//			case KeyEvent.VK_W:
-//					buttonUP = true;
-//				break;
-//			case KeyEvent.VK_S:
-//					buttonDown = true;
-//				break;
-//			case KeyEvent.VK_A:
-//					buttonLeft = true;
-//				break;
-//			case KeyEvent.VK_D:
-//					buttonRight = true;
-//				break;
-//			}
 		location();
 	}
 
@@ -612,10 +457,9 @@ class Tank {
 			buttonRight = false;
 			break;
 		}
-		
 		location();
 	}
-
+	
 	Rectangle getRect() {
 		return new Rectangle(tankX, tankY, TANK_WIDTH, TANK_HEIGHT);
 	}
